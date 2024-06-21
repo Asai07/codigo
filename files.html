@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script> <!-- For Icons -->
+    <style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        .dark-mode {
+            background-color: #1a202c;
+            color: #a0aec0;
+        }
+        .dark-mode .bg-white {
+            background-color: #2d3748;
+        }
+        .dark-mode .text-gray-700 {
+            color: #cbd5e0;
+        }
+        .dark-mode .border-gray-300 {
+            border-color: #4a5568;
+        }
+        .theme-switch-wrapper {
+            display: flex;
+            align-items: center;
+        }
+        .theme-switch {
+            display: inline-block;
+            height: 34px;
+            position: relative;
+            width: 60px;
+        }
+        .theme-switch input {
+            display: none;
+        }
+        .slider {
+            background-color: #ccc;
+            bottom: 0;
+            cursor: pointer;
+            left: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+            transition: .4s;
+        }
+        .slider:before {
+            background-color: white;
+            bottom: 4px;
+            content: "";
+            height: 26px;
+            left: 4px;
+            position: absolute;
+            transition: .4s;
+            width: 26px;
+        }
+        input:checked + .slider {
+            background-color: #2196F3;
+        }
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        .slider.round {
+            border-radius: 34px;
+        }
+        .slider.round:before {
+            border-radius: 50%;
+        }
+        .circle {
+            position: absolute;
+            border-radius: 50%;
+            transform: scale(0);
+            animation: circleExpand 0.5s forwards;
+        }
+        @keyframes circleExpand {
+            to {
+                transform: scale(100);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-900 font-sans transition duration-500">
+
+    <!-- Header -->
+    <header class="bg-white shadow-md fixed w-full z-20">
+        <div class="container mx-auto flex justify-between items-center py-4 px-6">
+            <div class="logo">
+                <img src="https://via.placeholder.com/80" alt="Logo" class="h-10">
+            </div>
+            <div class="flex items-center">
+                <div class="theme-switch-wrapper">
+                    <label class="theme-switch">
+                        <input type="checkbox" id="theme-toggle">
+                        <span class="slider round"></span>
+                    </label>
+                    <i id="theme-icon" class="fas fa-sun ml-3"></i>
+                </div>
+                <div class="user-profile flex items-center ml-4">
+                    <span class="mr-2">Username</span>
+                    <img src="https://via.placeholder.com/40" alt="User Profile" class="h-10 w-10 rounded-full border border-gray-300">
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sidebar and Main Content -->
+    <div class="flex pt-16 h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white shadow-md custom-scrollbar overflow-y-auto fixed h-full z-10">
+            <nav class="mt-10">
+                <a href="index.html" class="flex items-center py-3 px-6 text-gray-700 hover:bg-gray-100 transition duration-300">
+                    <i class="fas fa-tachometer-alt mr-3"></i>
+                    <span class="text-lg font-medium">Dashboard</span>
+                </a>
+                <a href="tasks.html" class="flex items-center py-3 px-6 text-gray-700 hover:bg-gray-100 transition duration-300">
+                    <i class="fas fa-tasks mr-3"></i>
+                    <span class="text-lg font-medium">Tasks</span>
+                </a>
+                <a href="files.html" class="flex items-center py-3 px-6 text-gray-700 hover:bg-gray-100 transition duration-300">
+                    <i class="fas fa-file-upload mr-3"></i>
+                    <span class="text-lg font-medium">Files</span>
+                </a>
+                <a href="analysis.html" class="flex items-center py-3 px-6 text-gray-700 hover:bg-gray-100 transition duration-300">
+                    <i class="fas fa-chart-bar mr-3"></i>
+                    <span class="text-lg font-medium">Analysis</span>
+                </a>
+                <a href="settings.html" class="flex items-center py-3 px-6 text-gray-700 hover:bg-gray-100 transition duration-300">
+                    <i class="fas fa-cogs mr-3"></i>
+                    <span class="text-lg font-medium">Settings</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-6 custom-scrollbar overflow-y-auto ml-64">
+            <!-- File Upload Form -->
+            <section class="mb-8 fade-in">
+                <h2 class="text-3xl font-bold mb-6">Upload Files</h2>
+                <div class="bg-white shadow-md rounded-lg p-6">
+                    <form>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="mb-4">
+                                <label class="block text-gray-700 text-sm font-bold mb-2" for="fileName"><i class="fas fa-file mr-2"></i>File Name</label>
+                                <input type="text" id="fileName" name="fileName" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 text-sm font-bold mb-2" for="fileType"><i class="fas fa-file-alt mr-2"></i>File Type</label>
+                                <select id="fileType" name="fileType" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                    <option value="html">HTML</option>
+                                    <option value="css">CSS</option>
+                                    <option value="pdf">PDF</option>
+                                    <option value="img">IMG</option>
+                                    <option value="mp4">MP4</option>
+                                    <option value="mp3">MP3</option>
+                                </select>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 text-sm font-bold mb-2" for="folderLabel"><i class="fas fa-tags mr-2"></i>Folder Label</label>
+                                <select id="folderLabel" name="folderLabel" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                    <option value="important" class="text-red-500">Important</option>
+                                    <option value="review" class="text-yellow-500">Review</option>
+                                    <option value="approved" class="text-green-500">Approved</option>
+                                </select>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 text-sm font-bold mb-2" for="uploadDate"><i class="fas fa-calendar-alt mr-2"></i>Upload Date</label>
+                                <input type="date" id="uploadDate" name="uploadDate" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 text-sm font-bold mb-2" for="fileDescription"><i class="fas fa-info-circle mr-2"></i>File Description</label>
+                                <textarea id="fileDescription" name="fileDescription" rows="3" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 text-sm font-bold mb-2" for="upload"><i class="fas fa-upload mr-2"></i>Choose File</label>
+                                <input type="file" id="upload" name="upload" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            </div>
+                        </div>
+                        <button type="submit" class="bg-blue-500 text-white py-2 px-6 rounded hover:bg-blue-600 focus:outline-none focus:shadow-outline">Upload</button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- File List -->
+            <section class="fade-in">
+                <h2 class="text-3xl font-bold mb-6">Files</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Folder 1 -->
+                    <div class="bg-white shadow-md rounded-lg p-4">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-xl font-semibold">Folder 1</h3>
+                            <i class="fas fa-folder-open text-yellow-500 text-2xl"></i>
+                        </div>
+                        <ul class="divide-y divide-gray-200">
+                            <li class="p-4 hover:bg-gray-100 rounded-lg transition duration-300 flex justify-between items-center">
+                                <div>
+                                    <div class="flex items-center">
+                                        <h4 class="text-lg font-medium">File 1 <i class="fas fa-file-alt text-gray-500 ml-2"></i></h4>
+                                        <span class="ml-3 text-sm px-3 py-1 rounded bg-red-100 text-red-500">Important</span>
+                                    </div>
+                                    <p class="text-sm text-gray-500">Size: 2 MB</p>
+                                    <p class="text-sm text-gray-500">Uploaded by @user1</p>
+                                    <p class="text-sm text-gray-500">Description: Project report</p>
+                                    <p class="text-sm text-gray-500">Upload Date: 2024-06-20</p>
+                                </div>
+                                <div class="flex space-x-2">
+                                    <button class="text-blue-500 hover:text-blue-700"><i class="fas fa-download"></i></button>
+                                    <button class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </li>
+                            <li class="p-4 hover:bg-gray-100 rounded-lg transition duration-300 flex justify-between items-center">
+                                <div>
+                                    <div class="flex items-center">
+                                        <h4 class="text-lg font-medium">File 2 <i class="fas fa-file-alt text-gray-500 ml-2"></i></h4>
+                                        <span class="ml-3 text-sm px-3 py-1 rounded bg-yellow-100 text-yellow-500">Review</span>
+                                    </div>
+                                    <p class="text-sm text-gray-500">Size: 3.5 MB</p>
+                                    <p class="text-sm text-gray-500">Uploaded by @user2</p>
+                                    <p class="text-sm text-gray-500">Description: Design mockup</p>
+                                    <p class="text-sm text-gray-500">Upload Date: 2024-06-19</p>
+                                </div>
+                                <div class="flex space-x-2">
+                                    <button class="text-blue-500 hover:text-blue-700"><i class="fas fa-download"></i></button>
+                                    <button class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <!-- Folder 2 -->
+                    <div class="bg-white shadow-md rounded-lg p-4">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-xl font-semibold">Folder 2</h3>
+                            <i class="fas fa-folder-open text-yellow-500 text-2xl"></i>
+                        </div>
+                        <ul class="divide-y divide-gray-200">
+                            <li class="p-4 hover:bg-gray-100 rounded-lg transition duration-300 flex justify-between items-center">
+                                <div>
+                                    <div class="flex items-center">
+                                        <h4 class="text-lg font-medium">File 3 <i class="fas fa-file-alt text-gray-500 ml-2"></i></h4>
+                                        <span class="ml-3 text-sm px-3 py-1 rounded bg-yellow-100 text-yellow-500">Review</span>
+                                    </div>
+                                    <p class="text-sm text-gray-500">Size: 1.2 MB</p>
+                                    <p class="text-sm text-gray-500">Uploaded by @user3</p>
+                                    <p class="text-sm text-gray-500">Description: Meeting notes</p>
+                                    <p class="text-sm text-gray-500">Upload Date: 2024-06-18</p>
+                                </div>
+                                <div class="flex space-x-2">
+                                    <button class="text-blue-500 hover:text-blue-700"><i class="fas fa-download"></i></button>
+                                    <button class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </li>
+                            <li class="p-4 hover:bg-gray-100 rounded-lg transition duration-300 flex justify-between items-center">
+                                <div>
+                                    <div class="flex items-center">
+                                        <h4 class="text-lg font-medium">File 4 <i class="fas fa-file-alt text-gray-500 ml-2"></i></h4>
+                                        <span class="ml-3 text-sm px-3 py-1 rounded bg-green-100 text-green-500">Approved</span>
+                                    </div>
+                                    <p class="text-sm text-gray-500">Size: 5 MB</p>
+                                    <p class="text-sm text-gray-500">Uploaded by @user4</p>
+                                    <p class="text-sm text-gray-500">Description: Financial report</p>
+                                    <p class="text-sm text-gray-500">Upload Date: 2024-06-17</p>
+                                </div>
+                                <div class="flex space-x-2">
+                                    <button class="text-blue-500 hover:text-blue-700"><i class="fas fa-download"></i></button>
+                                    <button class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <!-- Folder 3 -->
+                    <div class="bg-white shadow-md rounded-lg p-4">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-xl font-semibold">Folder 3</h3>
+                            <i class="fas fa-folder-open text-yellow-500 text-2xl"></i>
+                        </div>
+                        <ul class="divide-y divide-gray-200">
+                            <li class="p-4 hover:bg-gray-100 rounded-lg transition duration-300 flex justify-between items-center">
+                                <div>
+                                    <div class="flex items-center">
+                                        <h4 class="text-lg font-medium">File 5 <i class="fas fa-file-alt text-gray-500 ml-2"></i></h4>
+                                        <span class="ml-3 text-sm px-3 py-1 rounded bg-green-100 text-green-500">Approved</span>
+                                    </div>
+                                    <p class="text-sm text-gray-500">Size: 2.5 MB</p>
+                                    <p class="text-sm text-gray-500">Uploaded by @user5</p>
+                                    <p class="text-sm text-gray-500">Description: Marketing plan</p>
+                                    <p class="text-sm text-gray-500">Upload Date: 2024-06-16</p>
+                                </div>
+                                <div class="flex space-x-2">
+                                    <button class="text-blue-500 hover:text-blue-700"><i class="fas fa-download"></i></button>
+                                    <button class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </li>
+                            <li class="p-4 hover:bg-gray-100 rounded-lg transition duration-300 flex justify-between items-center">
+                                <div>
+                                    <div class="flex items-center">
+                                        <h4 class="text-lg font-medium">File 6 <i class="fas fa-file-alt text-gray-500 ml-2"></i></h4>
+                                        <span class="ml-3 text-sm px-3 py-1 rounded bg-red-100 text-red-500">Important</span>
+                                    </div>
+                                    <p class="text-sm text-gray-500">Size: 4 MB</p>
+                                    <p class="text-sm text-gray-500">Uploaded by @user6</p>
+                                    <p class="text-sm text-gray-500">Description: Sales data</p>
+                                    <p class="text-sm text-gray-500">Upload Date: 2024-06-15</p>
+                                </div>
+                                <div class="flex space-x-2">
+                                    <button class="text-blue-500 hover:text-blue-700"><i class="fas fa-download"></i></button>
+                                    <button class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- JavaScript for Theme Toggle -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const themeToggle = document.getElementById('theme-toggle');
+            const themeIcon = document.getElementById('theme-icon');
+            const body = document.body;
+
+            themeToggle.addEventListener('change', () => {
+                body.classList.toggle('dark-mode');
+                if (body.classList.contains('dark-mode')) {
+                    themeIcon.classList.remove('fa-sun');
+                    themeIcon.classList.add('fa-moon');
+                } else {
+                    themeIcon.classList.remove('fa-moon');
+                    themeIcon.classList.add('fa-sun');
+                }
+
+                const circle = document.createElement('div');
+                circle.classList.add('circle');
+                circle.style.background = body.classList.contains('dark-mode') ? '#2d3748' : '#ffffff';
+                circle.style.top = `${themeToggle.getBoundingClientRect().top}px`;
+                circle.style.left = `${themeToggle.getBoundingClientRect().left}px`;
+                document.body.appendChild(circle);
+                circle.addEventListener('animationend', () => {
+                    circle.remove();
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>

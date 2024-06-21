@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Interactive Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script> <!-- For Icons -->
+    <style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        .dark-mode {
+            background-color: #1a202c;
+            color: #a0aec0;
+        }
+        .dark-mode .bg-white {
+            background-color: #2d3748;
+        }
+        .dark-mode .text-gray-700 {
+            color: #cbd5e0;
+        }
+        .dark-mode .border-gray-300 {
+            border-color: #4a5568;
+        }
+        .theme-switch-wrapper {
+            display: flex;
+            align-items: center;
+        }
+        .theme-switch {
+            display: inline-block;
+            height: 34px;
+            position: relative;
+            width: 60px;
+        }
+        .theme-switch input {
+            display: none;
+        }
+        .slider {
+            background-color: #ccc;
+            bottom: 0;
+            cursor: pointer;
+            left: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+            transition: .4s;
+        }
+        .slider:before {
+            background-color: white;
+            bottom: 4px;
+            content: "";
+            height: 26px;
+            left: 4px;
+            position: absolute;
+            transition: .4s;
+            width: 26px;
+        }
+        input:checked + .slider {
+            background-color: #2196F3;
+        }
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        .slider.round {
+            border-radius: 34px;
+        }
+        .slider.round:before {
+            border-radius: 50%;
+        }
+        .circle {
+            position: absolute;
+            border-radius: 50%;
+            transform: scale(0);
+            animation: circleExpand 0.5s forwards;
+        }
+        @keyframes circleExpand {
+            to {
+                transform: scale(100);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-900 font-sans transition duration-500">
+
+    <!-- Header -->
+    <header class="bg-white shadow-md fixed w-full z-20">
+        <div class="container mx-auto flex justify-between items-center py-4 px-6">
+            <div class="logo">
+                <img src="https://via.placeholder.com/80" alt="Logo" class="h-10">
+            </div>
+            <div class="flex items-center">
+                <div class="theme-switch-wrapper">
+                    <label class="theme-switch">
+                        <input type="checkbox" id="theme-toggle">
+                        <span class="slider round"></span>
+                    </label>
+                    <i id="theme-icon" class="fas fa-sun ml-3"></i>
+                </div>
+                <div class="user-profile flex items-center ml-4">
+                    <span class="mr-2">Username</span>
+                    <img src="https://via.placeholder.com/40" alt="User Profile" class="h-10 w-10 rounded-full border border-gray-300">
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sidebar and Main Content -->
+    <div class="flex pt-16 h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white shadow-md custom-scrollbar overflow-y-auto fixed h-full z-10">
+            <nav class="mt-10">
+                <a href="index.html" class="flex items-center py-3 px-6 text-gray-700 hover:bg-gray-100 transition duration-300">
+                    <i class="fas fa-tachometer-alt mr-3"></i>
+                    <span class="text-lg font-medium">Dashboard</span>
+                </a>
+                <a href="tasks.html" class="flex items-center py-3 px-6 text-gray-700 hover:bg-gray-100 transition duration-300">
+                    <i class="fas fa-tasks mr-3"></i>
+                    <span class="text-lg font-medium">Tasks</span>
+                </a>
+                <a href="files.html" class="flex items-center py-3 px-6 text-gray-700 hover:bg-gray-100 transition duration-300">
+                    <i class="fas fa-file-upload mr-3"></i>
+                    <span class="text-lg font-medium">Files</span>
+                </a>
+                <a href="analysis.html" class="flex items-center py-3 px-6 text-gray-700 hover:bg-gray-100 transition duration-300">
+                    <i class="fas fa-chart-bar mr-3"></i>
+                    <span class="text-lg font-medium">Analysis</span>
+                </a>
+                <a href="settings.html" class="flex items-center py-3 px-6 text-gray-700 hover:bg-gray-100 transition duration-300">
+                    <i class="fas fa-cogs mr-3"></i>
+                    <span class="text-lg font-medium">Settings</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-6 custom-scrollbar overflow-y-auto ml-64">
+            <!-- Task List -->
+            <section class="mb-8 fade-in">
+                <h2 class="text-3xl font-bold mb-6">Tasks</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white shadow-md rounded-lg p-4">
+                        <h3 class="text-xl font-semibold mb-4">In Progress</h3>
+                        <ul class="divide-y divide-gray-200">
+                            <li class="flex justify-between items-center p-4">
+                                <span>@user1: Complete project documentation</span>
+                                <span class="bg-green-100 text-green-500 text-sm px-3 py-1 rounded">High Priority</span>
+                            </li>
+                            <li class="flex justify-between items-center p-4">
+                                <span>@user2: Update the user interface</span>
+                                <span class="bg-blue-100 text-blue-500 text-sm px-3 py-1 rounded">Medium Priority</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="bg-white shadow-md rounded-lg p-4">
+                        <h3 class="text-xl font-semibold mb-4">Pending</h3>
+                        <ul class="divide-y divide-gray-200">
+                            <li class="flex justify-between items-center p-4">
+                                <span>@user3: Fix bugs in the system</span>
+                                <span class="bg-red-100 text-red-500 text-sm px-3 py-1 rounded">Low Priority</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="bg-white shadow-md rounded-lg p-4">
+                        <h3 class="text-xl font-semibold mb-4">Completed</h3>
+                        <ul class="divide-y divide-gray-200">
+                            <li class="flex justify-between items-center p-4">
+                                <span>@user4: Deploy the latest update</span>
+                                <span class="bg-gray-100 text-gray-500 text-sm px-3 py-1 rounded">Completed</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Clients -->
+            <section class="mb-8 fade-in">
+                <h2 class="text-3xl font-bold mb-6">Clients</h2>
+                <div class="bg-white shadow-md rounded-lg p-4">
+                    <ul class="divide-y divide-gray-200">
+                        <li class="flex items-center p-4">
+                            <img src="https://via.placeholder.com/40" alt="Client 1" class="h-10 w-10 rounded-full mr-4">
+                            <span>Client 1</span>
+                        </li>
+                        <li class="flex items-center p-4">
+                            <img src="https://via.placeholder.com/40" alt="Client 2" class="h-10 w-10 rounded-full mr-4">
+                            <span>Client 2</span>
+                        </li>
+                        <li class="flex items-center p-4">
+                            <img src="https://via.placeholder.com/40" alt="Client 3" class="h-10 w-10 rounded-full mr-4">
+                            <span>Client 3</span>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Analysis -->
+            <section class="fade-in">
+                <h2 class="text-3xl font-bold mb-6">Analysis</h2>
+                <div class="bg-white shadow-md rounded-lg p-6">
+                    <canvas id="myChart" width="400" height="200"></canvas>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- JavaScript for Chart.js and Theme Toggle -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const ctx = document.getElementById('myChart').getContext('2d');
+            const myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+                    datasets: [{
+                        label: '# of Votes',
+                        data: [12, 19, 3, 5, 2, 3],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)',
+                            'rgba(255, 159, 64, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            const themeToggle = document.getElementById('theme-toggle');
+            const themeIcon = document.getElementById('theme-icon');
+            const body = document.body;
+
+            themeToggle.addEventListener('change', () => {
+                body.classList.toggle('dark-mode');
+                if (body.classList.contains('dark-mode')) {
+                    themeIcon.classList.remove('fa-sun');
+                    themeIcon.classList.add('fa-moon');
+                } else {
+                    themeIcon.classList.remove('fa-moon');
+                    themeIcon.classList.add('fa-sun');
+                }
+
+                const circle = document.createElement('div');
+                circle.classList.add('circle');
+                circle.style.background = body.classList.contains('dark-mode') ? '#2d3748' : '#ffffff';
+                circle.style.top = `${themeToggle.getBoundingClientRect().top}px`;
+                circle.style.left = `${themeToggle.getBoundingClientRect().left}px`;
+                document.body.appendChild(circle);
+                circle.addEventListener('animationend', () => {
+                    circle.remove();
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>
